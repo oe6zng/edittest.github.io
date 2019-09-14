@@ -1,0 +1,443 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0039)https://arachnoid.com/SigGen/index.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>
+      JavaScript Signal Generator / Spectrum Analyzer
+    </title>
+    <meta name="viewport" content="width=device-width">
+    
+    <link rev="made" href="http://www.arachnoid.com/">
+    <meta http-equiv="Content-language" content="en">
+    <meta name="author" content="Paul Lutus">
+    <meta name="owner" content="Paul Lutus">
+    <meta name="description" content="A JavaScript-based signal generation / analysis utility.">
+    <meta name="group" content="ARACH/PROGRAMMING">
+    <meta name="menuCat" content="JavaScript">
+    <meta name="RSSImage" content="http://arachnoid.com/JSigGen/graphics/app_image.png">
+    <meta name="keywords" content="javascript computer language algorithms mathematics">
+    <meta name="rating" content="General">
+    <meta name="ROBOTS" content="ALL">
+    <meta name="GENERATOR" content="Arachnophilia 2.1">
+    <meta name="FORMATTER" content="Arachnophilia 2.1">
+ <!--   <link rel="stylesheet" type="text/css" href="./JavaScript Signal Generator _ Spectrum Analyzer_files/default_article.css"-->
+ <!--    <script type="text/javascript" src="./JavaScript Signal Generator _ Spectrum Analyzer_files/dictionary_access.js.Download"></script-->
+ <!--    <script type="text/javascript" src="./JavaScript Signal Generator _ Spectrum Analyzer_files/MathJax.js.Download"></script -->
+ <!--    <link rel="stylesheet" type="text/css" href="./JavaScript Signal Generator _ Spectrum Analyzer_files/styles.css" -->
+    <script type="text/javascript" src="./generator.js"></script>
+    
+<!-- <td><a href="https://arachnoid.com/javascript/treebrowse.html"><img src="./leftarrow.png" border="0" alt="" title="Click for prior page"></a></td><td><a href="https://arachnoid.com/lutusp/cgi.html"><img src="./JavaScript Signal Generator _ Spectrum Analyzer_files/rightarrow.png" border="0" alt="" title="Click for next page"></a></td><td>&nbsp;<a href="https://arachnoid.com/administration/submit.php" title="Recommend this page to friends"><img src="./JavaScript Signal Generator _ Spectrum Analyzer_files/addthis16.gif" style="border:0px;" alt="">&nbsp;&nbsp;Share This Page</a></td></tr></tbody></table> -->
+    <!-- SiteIndexEnd -->
+    <div align="center">
+      <div class="article_title_inverse">JavaScript Signal Generator / Spectrum Analyzer</div>
+      <div class="article_linklist_inverse">
+       
+        
+        <p style="">— <a href="https://arachnoid.com/administration/index.html" title="Click for biography">P. Lutus</a> —
+         —</p>
+        
+        <p style="">Copyright © 2015, <a href="https://arachnoid.com/administration/index.html" title="Click for biography">P. Lutus</a></p>
+        
+        <p>Current Version: 1.7 (09.21.2015)</p>
+       
+      </div>
+    </div>
+    
+    <div class="article_wrapper">
+      <div class="roundcorner_16_parch_content"><br>
+        
+        <a name="Introduction"></a><span class="article_subtopic">Introduction</span>
+        
+         
+          <p>Adjust the generator/analyzer's values by changing the sliders' positions, at first coarsely with your mouse or other pointing device. Then finer control over frequencies, sync trip point and display time/frequency range can be had using your keyboard's arrow keys and (on some advanced browsers) by spinning your mouse wheel while your mouse cursor rests within the numeric entry panes.</p>
+          
+          
+          <div style="margin-left:auto;margin-right:auto;width:750px;height=500px;overflow:hidden;" class="inputgroup">
+            <table class="squeezed">
+              <tbody><tr>
+                <td colspan="2">
+                  <canvas id="scope" width="750" height="500" style="background:black">
+                  Your browser doesn't support the features this program requires.
+                  </canvas>
+              </td></tr>
+              <tr><td>
+                <span id="leftScopeTag">0.00  ms</span></td><td><span id="rightScopeTag" style="float:right;">4.54 ms</span></td>
+              </tr>
+            </tbody></table>
+            
+            <table width="750" class="aligned">
+              <tbody><tr><td>
+                  Time/Frequency scale: </td><td><input class="scope_slider" type="range" id="timeScale" min=".001" value="0.45" max="1.0" step=".0001" oninput="SigGen.setParams()" title="Adjust with mouse cursor or use arrow keys">
+                </td>
+                <td></td>
+              </tr>
+              <tr><td style="vertical-align:middle">
+                  Sync Trigger level:</td><td>
+                  <input class="scope_slider" type="range" id="syncLevel" min="-0.5" value="0" max="0.5" step=".001" oninput="SigGen.setParams()" style="vertical-align:middle" title="Adjust with mouse cursor or use arrow keys">&nbsp;&nbsp;<input id="sync" type="checkbox" onclick="SigGen.startSig()" style="vertical-align:middle" checked=""> Enable
+              </td></tr>
+              <tr><td>
+                  <p>Sync Trigger Source:</p>
+                  </td><td><span class="genColorBox" title="Use the signal generator for scope synchronization.">
+                    <input type="radio" name="trig" value="generator" onclick="SigGen.startSig()" checked=""> Signal Generator </span>
+                  &nbsp;&nbsp;<span class="micColorBox" title="Use the microphone input for scope synchronization. In many cases your system will ask permission to access this resource."><input type="radio" name="trig" value="microphone" onclick="SigGen.startSig()"> Microphone</span>&nbsp;&nbsp;Domain: <input type="radio" name="disp" value="Time" title="Time-domain display, as with a conventional oscilloscope" onclick="SigGen.startSig()" checked=""> Time 
+                  &nbsp;&nbsp;<span><input type="radio" name="disp" value="Freq" title="Frequency-domain display, based on a Fouier transform" onclick="SigGen.startSig()"> Frequency </span>
+                  
+              </td></tr>
+              
+              <tr><td>
+                  FFT Binsize: </td><td title="High settings improve low-frequency resolution but degrade response time">
+                   <input type="radio" name="binsize" value="512" onclick="SigGen.startSig()"> 512
+                   <input type="radio" name="binsize" value="1024" onclick="SigGen.startSig()"> 1024
+                   <input type="radio" name="binsize" value="2048" onclick="SigGen.startSig()" checked=""> 2048
+                  <input type="radio" name="binsize" value="4096" onclick="SigGen.startSig()"> 4096 
+                  <input type="radio" name="binsize" value="8192" onclick="SigGen.startSig()"> 8192 
+                   <input type="radio" name="binsize" value="16384" onclick="SigGen.startSig()"> 16384
+                   <input type="radio" name="binsize" value="32768" onclick="SigGen.startSig()"> 32768
+                   
+                  
+                  
+              </td></tr>
+              
+            </tbody></table>
+            
+          </div>
+          
+          
+          
+          
+          <div align="center"><p><input id="enable" type="checkbox" onclick="SigGen.activate() "> <b>Activate</b> 
+              &nbsp;&nbsp;
+              <input id="mute" type="checkbox" onclick="SigGen.startSig() "> <b>Mute output audio</b>&nbsp;|&nbsp;
+  <!--            <input id="mute" type="checkbox" onclick="SigGen.startSig()" checked=""><b>Mute output audio</b>&nbsp;|&nbsp; -->
+              <b>Signal Source:</b>
+              &nbsp;&nbsp;
+              <span class="genColorBox" title="Use the signal generator for scope data.">
+                <input type="radio" name="source" value="generator" onclick="SigGen.startSig()" checked=""> Signal Generator
+              </span>
+              &nbsp;&nbsp;
+              <span class="micColorBox" title="Use the microphone for scope data. In many cases your system will ask permission to access this resource.">
+                <input type="radio" name="source" value="microphone" onclick="SigGen.startSig()"> Microphone
+              </span>
+            </p>
+          </div>
+          
+          <p><b>Signal Generator:</b></p>
+          
+          <blockquote>
+            
+            <div class="genColorBox">
+              <b>Properties:</b>
+              
+              <blockquote>
+                <div class="inputgroup">
+<table>
+                  <tbody><tr>
+                    <td>
+                      Carrier:
+                    </td>
+                    <td>
+                    Gain: </td>
+                    <td><input class="control_slider" type="range" id="carrierGain" min="0.0" value="0.0" max="1.0" step=".001" oninput="SigGen.setParams()" title="Adjust with mouse cursor or use arrow keys">
+                    </td>
+                    <td>
+                      Frequency: <input class="numeric_entry" type="number" id="carrierFreq" min="0" value="440" max="20000" onmouseover="this.focus();" onwheel="SigGen.setParams();" onchange="SigGen.setParams();" title="Enter numeric value or spin mouse wheel for small steps">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      Modulation:
+                    </td>
+                    <td>
+                    Gain:</td>
+                    <td> <input class="control_slider" type="range" id="modGain" min="0.0" value="0.0" max="1.0" step=".001" oninput="SigGen.setParams()" title="Adjust with mouse cursor or use arrow keys">
+                    </td>
+                    <td>
+                      Frequency: <input class="numeric_entry" type="number" id="modFreq" min="0.0" value="40" max="20000" onmouseover="this.focus();" onwheel="SigGen.setParams();" onchange="SigGen.setParams();" title="Enter numeric value or spin mouse wheel for small steps">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      Noise:
+                    </td>
+                    <td>
+                    Gain: </td>
+                    <td><input class="control_slider" type="range" id="noiseGain" min="0.0" value="1.0" max="1.0" step=".001" oninput="SigGen.setParams()" title="Adjust with mouse cursor or use arrow keys">
+                    </td>
+                    <td>
+                      <input id="noise" type="checkbox" onclick="SigGen.startSig()" checked=""> Enable
+                    </td>
+                  </tr>
+                </tbody></table>
+</div>
+              </blockquote>
+              
+              
+              
+              <p><b>Carrier waveform:</b></p>
+              
+              <blockquote>
+                <span class="inputgroup">
+                  <input type="radio" name="cwave" value="sine" onclick="SigGen.startSig()" checked=""> Sine
+                  <input type="radio" name="cwave" value="square" onclick="SigGen.startSig()"> Square
+                  <input type="radio" name="cwave" value="triangle" onclick="SigGen.startSig()"> Triangle
+                  <input type="radio" name="cwave" value="sawtooth" onclick="SigGen.startSig()"> Sawtooth
+                </span>
+              </blockquote>
+              
+              <p><b>Modulation:</b></p>
+              
+              <blockquote>
+                <span class="inputgroup">
+                  <input type="radio" name="mode" value="AM" onclick="SigGen.startSig()" checked=""> AM
+                  <input type="radio" name="mode" value="FM" onclick="SigGen.startSig()"> FM
+                </span>
+              </blockquote>
+              
+              <p><b>Modulation Waveform:</b></p>
+              
+              <blockquote>
+                <span class="inputgroup">
+                  <input type="radio" name="mwave" value="sine" onclick="SigGen.startSig()" checked=""> Sine
+                  <input type="radio" name="mwave" value="square" onclick="SigGen.startSig()"> Square
+                  <input type="radio" name="mwave" value="triangle" onclick="SigGen.startSig()"> Triangle
+                  <input type="radio" name="mwave" value="sawtooth" onclick="SigGen.startSig()"> Sawtooth
+                </span>
+              </blockquote>
+            </div>
+          </blockquote>
+          
+          <p><b>Microphone:</b></p>
+          
+          <blockquote>
+            <div class="micColorBox">
+              <b>Gain:</b>
+              
+              <blockquote>
+                <table class="inputgroup">
+                  <tbody><tr>
+                    <td>
+                      <input style="width:500px" type="range" id="micGain" min="-2" value="0" max="2.0" step=".001" oninput="SigGen.setParams()">
+                    </td>
+                    <td id="micReadout" style="padding:8px;">1.0</td>
+                  </tr>
+                </tbody></table>
+              </blockquote>
+            </div>
+          </blockquote>
+          
+          <p>&nbsp;</p>
+          <hr>
+        </blockquote>
+        
+        <a name="Advanced_Features"></a><span class="article_subtopic">Advanced Features</span>
+        
+        <blockquote>
+        
+        
+        
+        <p><b>FFT Binsize</b></p>
+        
+        <p>This setting selects the array size for the <a href="https://en.wikipedia.org/wiki/Fast_Fourier_transform">Fast Fourier Transform</a> algorithm and the time-domain scope display. High values improve spectral resolution but slow program response time. When displaying the frequency domain, the program's response time declines roughly as the square of the selected bin size.</p>
+        
+        <p>The effect of this control is particularly noticeable when using the microphone input as a signal source. When displaying the time domain, smaller settings greatly improve the response rate to rapidy changing input. In exchange, when displaying the frequency domain, large settings improve resolution and show more spectrum detail.</p>
+
+<p><b>Selectable Sync</b></p>
+
+          <p>Starting with Version 1.4, the analyzer can accept the system microphone as a signal source, and the sync trigger source can be set to use either the generator or the live input.</p>
+          
+          <p>Why is this important? It allows the user to measure the frequency of live audio data sources with very high accuracy by comparing them to a known frequency standard (i.e. this program's signal generator). Here's how to set this up:</p>
+          
+          <ul>
+            <li>For "Signal Source," Select "Microphone". Your system will ask permission to access this resource.</li>
+            <li>For "Sync Trigger Source," select "Signal Generator".</li>
+            <li>Set the "Sync Trigger Level" to mid-range.</li>
+            <li>Set the analyzer domain to "Time".</li>
+            <li>Set the "Carrier" level to mid-range.</li>
+            <li>Set the "Modulation" level to zero.</li>
+            <li>Disable the noise source.</li>
+            <li>For carrier frequency, choose any frequency of interest, such as the expected frequency of a musical instrument.</li>
+          </ul>
+          
+          <p>With the above settings, the analyzer scope will display live microphone data but be synchronized to the generator's frequency. This means a live signal waveform, such as a musical instrument or a radio signal, that is not at the same frequency as the generator, will drift to the right or the left in proportion to the degree that it differs in frequency from the internal generator.</p>
+          
+          <p>This method for comparing frequencies is exquisitely sensitive to small differences. As a test case, I set things up as described above and used a tuning fork as a live test signal. I set the internal generator to 440 Hz (my tuning fork's frequency) and positioned the tuning fork in front of the microphone. I saw right away that there was a significant difference between the tuning fork and the internally generated reference frequency. By carefully adjusting the internal generator until the waveform became stationary, I established that my 440 Hz tuning fork actually oscillates at 440.65 Hz, an error of 0.14%.</p>
+          
+          <p>Here are some useful hints:</p>
+          
+          <ul>
+            <li>A live microphone signal that's at exactly the same frequency as the generator will show a stationary waveform — drifting neither to the left or right.</li>
+            <li>If the live signal is higher in frequency than the internal generator, the waveform will drift to the left.</li>
+            <li>If the live signal is lower in frequency than the internal generator, the waveform will drift to the right.</li>
+            <li>To estimate the error beween a signal and the generator, time the displayed rate of drift — if it requires one second for the displayed waveform to drift by one full cycle, that represents an error of one Hertz.</li>
+            <li>To establish the exact frequency of a live signal, adjust the generator's frequency until the displayed waveform is stationary.</li>
+            <li>To change the frequency of a live signal, for example a musical instrument, tune the instrument until the displayed waveform is stationary.</li>
+            <li>To use this feature routinely, create a table of frequencies of interest, and set the generator to each frequency as required while tuning your instrument.</li>
+          </ul>
+          
+          <p>For example, here is a list of guitar string frequencies, starting with the highest-frequency string (<a href="https://en.wikipedia.org/wiki/Guitar_tunings">source</a>):</p>
+          
+          <blockquote>
+            <table cellspacing="0" cellpadding="4" border="1" class="pitchtable">
+              <tbody><tr>
+                <th>
+                  String
+                </th>
+                <th>
+                  String name
+                </th>
+                <th>
+                  Frequency Hz
+                </th>
+                <th>
+                  Scientific pitch name
+                </th>
+              </tr>
+              <tr>
+                <td>
+                  1
+                </td>
+                <td>
+                  (E)
+                </td>
+                <td>
+                  329.63
+                </td>
+                <td>
+                  E4
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  2
+                </td>
+                <td>
+                  (B)
+                </td>
+                <td>
+                  246.94
+                </td>
+                <td>
+                  B3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  3
+                </td>
+                <td>
+                  (G)
+                </td>
+                <td>
+                  196.00
+                </td>
+                <td>
+                  G3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  4
+                </td>
+                <td>
+                  (D)
+                </td>
+                <td>
+                  146.83
+                </td>
+                <td>
+                  D3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  5
+                </td>
+                <td>
+                  (A)
+                </td>
+                <td>
+                  110.00
+                </td>
+                <td>
+                  A2
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  6
+                </td>
+                <td>
+                  (E)
+                </td>
+                <td>
+                  82.41
+                </td>
+                <td>
+                  E2
+                </td>
+              </tr>
+            </tbody></table>
+          </blockquote>
+          
+          <p><b>The Mathematical Way</b></p>
+          
+          <p>Here's a more general approach to converting musical notes to corresponding frequencies in Hertz, one that relies on mathematics.</p>
+          
+          
+          <ul>
+            <li>Let's start by establishing a note index that's equal to zero at Middle A (440 Hz).</li>
+            <li>If we decrease the index by one, we move down in frequency by one semitone in the chromatic scale — to G♯ or A♭.</li>
+            <li>If we increase the index by one, we move up in frequency by one semitone — to A♯ or B♭.</li>
+            <li>If we increase or decrease the index by 12, we move up or down an octave.</li>
+            <li>The relationship between index number and frequency is unlimited — it extends up and down past the range of any imaginable musical instruments.</li>
+          </ul>
+          
+          <p>The mathematical equation that converts index numbers to frequencies is:</p>
+          
+          
+          <blockquote>
+            (1) <span class="MathJax_Preview" style="display: none;"></span><span class="MathJax" id="MathJax-Element-6-Frame" tabindex="0" style=""><nobr><span class="math" id="MathJax-Span-149" style="width: 9.073em; display: inline-block;"><span style="display: inline-block; position: relative; width: 7.202em; height: 0px; font-size: 126%;"><span style="position: absolute; clip: rect(1.137em, 1007.2em, 2.837em, -999.997em); top: -2.435em; left: 0em;"><span class="mrow" id="MathJax-Span-150"><span class="mstyle" id="MathJax-Span-151"><span class="mrow" id="MathJax-Span-152"><span class="mi" id="MathJax-Span-153" style="font-size: 120%; font-family: MathJax_Math-italic;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.06em;"></span></span><span class="mo" id="MathJax-Span-154" style="font-size: 120%; font-family: MathJax_Main; padding-left: 0.286em;">=</span><span class="mn" id="MathJax-Span-155" style="font-size: 120%; font-family: MathJax_Main; padding-left: 0.286em;">440</span><span class="mo" id="MathJax-Span-156" style="font-size: 120%; font-family: MathJax_Main; padding-left: 0.23em;">×</span><span class="msubsup" id="MathJax-Span-157" style="padding-left: 0.286em;"><span style="display: inline-block; position: relative; width: 1.704em; height: 0px;"><span style="position: absolute; clip: rect(3.064em, 1000.57em, 4.198em, -999.997em); top: -4.022em; left: 0em;"><span class="mn" id="MathJax-Span-158" style="font-size: 120%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.028em;"></span></span><span style="position: absolute; top: -4.532em; left: 0.626em;"><span class="texatom" id="MathJax-Span-159"><span class="mrow" id="MathJax-Span-160"><span class="mfrac" id="MathJax-Span-161"><span style="display: inline-block; position: relative; width: 0.74em; height: 0px; margin-right: 0.173em; margin-left: 0.173em;"><span style="position: absolute; clip: rect(3.574em, 1000.34em, 4.198em, -999.997em); top: -4.419em; left: 50%; margin-left: -0.167em;"><span class="mi" id="MathJax-Span-162" style="font-size: 60%; font-family: MathJax_Math-italic;">n</span><span style="display: inline-block; width: 0px; height: 4.028em;"></span></span><span style="position: absolute; clip: rect(3.461em, 1000.57em, 4.198em, -999.997em); top: -3.682em; left: 50%; margin-left: -0.281em;"><span class="mn" id="MathJax-Span-163" style="font-size: 60%; font-family: MathJax_Main;">12</span><span style="display: inline-block; width: 0px; height: 4.028em;"></span></span><span style="position: absolute; clip: rect(0.853em, 1000.74em, 1.25em, -999.997em); top: -1.244em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 0.74em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.08em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.028em;"></span></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.44em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.354em; border-left: 0px solid; width: 0px; height: 1.932em;"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-6"> \large f = 440 \times 2^{\frac{n}{12}} </script>
+            
+            <p>Where:</p>
+            
+            <ul>
+              <li><span class="MathJax_Preview" style="display: none;"></span><span class="MathJax" id="MathJax-Element-7-Frame" tabindex="0" style=""><nobr><span class="math" id="MathJax-Span-164" style="width: 0.74em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.57em; height: 0px; font-size: 126%;"><span style="position: absolute; clip: rect(1.137em, 1000.57em, 2.384em, -999.997em); top: -1.981em; left: 0em;"><span class="mrow" id="MathJax-Span-165"><span class="mi" id="MathJax-Span-166" style="font-family: MathJax_Math-italic;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.06em;"></span></span></span><span style="display: inline-block; width: 0px; height: 1.987em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.354em; border-left: 0px solid; width: 0px; height: 1.289em;"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-7">f</script> = frequency in Hertz</li>
+              <li><span class="MathJax_Preview" style="display: none;"></span><span class="MathJax" id="MathJax-Element-8-Frame" tabindex="0" style=""><nobr><span class="math" id="MathJax-Span-167" style="width: 0.796em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.626em; height: 0px; font-size: 126%;"><span style="position: absolute; clip: rect(1.363em, 1000.63em, 2.157em, -999.997em); top: -1.981em; left: 0em;"><span class="mrow" id="MathJax-Span-168"><span class="mi" id="MathJax-Span-169" style="font-family: MathJax_Math-italic;">n</span></span><span style="display: inline-block; width: 0px; height: 1.987em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.068em; border-left: 0px solid; width: 0px; height: 0.718em;"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-8">n</script> = index number as explained above, 0 = middle A.</li>
+            </ul>
+            
+          </blockquote>
+          
+          
+          <p><b>Generator Accuracy</b></p>
+          
+          
+          <p>Readers may wonder, "How accurate is the internal generator? Is it a reliable frequency standard?" To answer this question with respect to my development computer, I compared this program's generated frequencies with radio signals providing known frequencies of high accuracy (for example, the <a href="http://www.nist.gov/pml/div688/grp40/wwv.cfm">WWV</a> radio signals maintained by the <a href="http://www.nist.gov/">National Institute of Standards and Technology</a>), and this test showed that the generator's accuracy is very high — much higher than traditional standards like tuning forks. Most modern computers will turn out to have an audio generator/detector of comparable accuracy.</p>
+          
+          <p>In another test, I ran one copy of this program set up as a generator, driving the machine's speakers with a 440 Hz test tone, and on a separate computer I ran another copy set up as explained above, configured to detect small frequency discrepancies at the same frequency. To a very high standard of precision, the two machines agreed.</p>
+ 
+        </blockquote>
+        
+        
+        <a name="Revision_History"></a><span class="article_subtopic">Revision History</span>
+        
+        <blockquote>
+          <ul>
+          <li>09.21.2015 Version 1.7. Cleaned up some discrepancies in the analyzer display and the method for white noise generation.</li>
+          <li>09.20.2015 Version 1.6. Optimized the graphic rendering methods for better display appearance.</li>
+          <li>09.19.2015 Version 1.5. Added an FFT binsize selector control, changed default FFT binsize for faster program response to microphone input, changed program layout for better readability, added a flyout time/frequency/amplitude indicator that follows the mouse cursor in the scope display.</li>
+            <li>09.18.2015 Version 1.4. Added live microphone signal source, configured analyzer so the sync trigger source can be either the generator or the live microphone input. Read the "Advanced Features" section above to learn how to use this feature.</li>
+            <li>09.15.2015 Version 1.3. Improved scale of scope and controls. Added mute checkbox, enabled by default, that allows analysis scope to function without output audio.</li>
+            <li>09.14.2015 Version 1.2. Fixed JavaScript bug that prevented operation in Microsoft Edge (Microsoft Internet Explorer can't run this program).</li>
+            <li>08.30.2015 Version 1.1. Improved the interface, changed default settings.</li>
+            <li>08.27.2015 Version 1.0. Initial Public Release.</li>
+          </ul>
+          
+        </blockquote>
+        
+        
+        
+      </div> <!-- content -->
+    </div> <!-- wrapper -->
+    <p></p>
+ 
+
+<div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal; font-family: MathJax_Size1, sans-serif;"></div></div><div style="padding: 4px; opacity: 0.6; position: absolute; color: white; background: black; visibility: hidden; left: 582px; top: 1788px;">0.01 ms, 0.03</div></body></html>
