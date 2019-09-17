@@ -18,7 +18,12 @@
  ***************************************************************************/
 
 // Created on Aug 26, 2015 11:23:50 AM
-
+// Modified for Stereo Generator Aug 08, 2019
+	var Lamplitude = 1.0;
+	var Lphase = 0.0;
+	var Ramplitude = 1.0;
+	var Rphase = 3.14/2;
+	
 SigGen = function() {
   SigGen.temp = 0;
   SigGen.canvas = SigGen.id("scope");
@@ -98,12 +103,27 @@ SigGen.setParams = function() {
   // make the time/frequency scale easier to use
   SigGen.timeScale = Math.pow(SigGen.id('timeScale').value,4);
   SigGen.syncLevel = SigGen.id('syncLevel').value;
-  SigGen.noiseGain.gain.setTargetAtTime( parseFloat(SigGen.id('noiseGain').value),0,0);
+  SigGen.noiseGain.gain.setTargetAtTime( parseFloat(SigGen.id('noiseGain_Left').value),0,0);
+  Lamplitude = parseFloat(SigGen.id('noiseGain_Left').value),0,0;
+ //  Ramplitude = parseFloat(SigGen.id('noiseGain_Right').value),0,0;
+   Ramplitude = parseFloat(SigGen.id('noiseGain_Right').value),0,0;
+   Rphase = 3.14 + -3.14 *  parseFloat(SigGen.id('noisePhase_Right').value),0,0;
   var ltag = "";
   var rtag = "";
   var x = SigGen.xCoordVal();
   SigGen.id("leftScopeTag").innerHTML = "0.00 " + SigGen.unitTag;
   SigGen.id("rightScopeTag").innerHTML = x.toFixed(2) + SigGen.unitTag;
+  //SigGen.initNoiseGen();
+   	for (var i = 0; i < bufferSize; i++) {
+		// audio is in [-1.0; 1.0] too much for some headphone amplifiers
+		output[i] = Lamplitude * Math.sin(Lphase + (i*1000)/(1000*6.282));
+	}
+	for (var i = 0; i < bufferSize; i++) {
+		// audio is in [-1.0; 1.0]
+//		output2[i] = noiseGain_Right * Math.sin(Rphase + (i*1000)/(1000*6.282));
+		output2[i] = Ramplitude * Math.sin(Rphase + (i*1000)/(1000*6.282));
+	}
+
   return true;
 }
 
@@ -263,33 +283,35 @@ SigGen.loadContext = function() {
 // generate an array of white noise
 
 SigGen.initNoiseGen = function() {
-	var Lamplitude = 0.71;
-	var Lphase = 0.0;
-	var Ramplitude = 0.71;
-	var Rphase = 3.14/2;
+console.log('init');		
   if(SigGen.whiteNoise) {
     SigGen.whiteNoise.disconnect(SigGen.noiseGain);
     SigGen.whiteNoise = null;
   }
-  var bufferSize = 4 * SigGen.audio.sampleRate;
+//  var 
+  bufferSize = 4 * SigGen.audio.sampleRate;
   if(!SigGen.noiseBuffer) {
     SigGen.noiseBuffer = SigGen.audio.createBuffer(2, bufferSize, SigGen.audio.sampleRate);
-    var output = SigGen.noiseBuffer.getChannelData(0);
-    var output2 = SigGen.noiseBuffer.getChannelData(1);
+   // var
+	output = SigGen.noiseBuffer.getChannelData(0);
+   // var
+	output2 = SigGen.noiseBuffer.getChannelData(1);
  //   for (var i = 0; i < bufferSize; i++) {
  //     output[i] = Math.random() * 2 - 1;
  //   }
 //		var channel = 0;
 	//var output = myArrayBuffer.getChannelData(channel);
+/*
 	for (var i = 0; i < bufferSize; i++) {
 		// audio is in [-1.0; 1.0] too much for some headphone amplifiers
 		output[i] = Lamplitude * Math.sin(Lphase + (i*1000)/(1000*6.282));
 	}
 	for (var i = 0; i < bufferSize; i++) {
 		// audio is in [-1.0; 1.0]
+//		output2[i] = noiseGain_Right * Math.sin(Rphase + (i*1000)/(1000*6.282));
 		output2[i] = Ramplitude * Math.sin(Rphase + (i*1000)/(1000*6.282));
 	}
-
+*/
   }
   SigGen.whiteNoise = SigGen.audio.createBufferSource();
   SigGen.whiteNoise.buffer = SigGen.noiseBuffer;
@@ -526,4 +548,3 @@ SigGen.activate = function() {
 }
 
 window.onload = function() { new SigGen(); }
-
