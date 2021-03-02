@@ -19,6 +19,7 @@
 
 // Created on Aug 26, 2015 11:23:50 AM
 // Modified for Stereo Generator Aug 08, 2019
+// cosmetic changes  Mar 02, 2021
 	var Lamplitude = 1.0;
 	var Lphase = 0.0;
 	var Ramplitude = 1.0;
